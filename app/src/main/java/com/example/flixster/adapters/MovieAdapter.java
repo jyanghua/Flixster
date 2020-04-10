@@ -1,6 +1,7 @@
 package com.example.flixster.adapters;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.flixster.R;
 import com.example.flixster.models.Movie;
 
@@ -69,7 +71,25 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         public void bind(Movie movie) {
             tvTitle.setText(movie.getTitle());
             tvOverview.setText(movie.getOverview());
-            Glide.with(context).load(movie.getPosterPath()).into(ivPoster);
+            String imageUrl;
+            int radius = 2;
+            int placeholder;
+
+            // Configuration changes for images
+            if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                imageUrl = movie.getBackdropPath();
+                placeholder = R.drawable.placeholder_land;
+            } else {
+                imageUrl = movie.getPosterPath();
+                placeholder = R.drawable.placeholder_port;
+            }
+
+            Glide.with(context)
+                    .load(imageUrl)
+                    .placeholder(placeholder)
+                    .error(placeholder)
+                    .transform(new RoundedCorners(radius))
+                    .into(ivPoster);
         }
     }
 }
