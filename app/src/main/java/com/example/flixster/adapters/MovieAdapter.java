@@ -19,11 +19,13 @@ import com.example.flixster.models.Movie;
 
 import java.util.List;
 
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
+public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     Context context;
     List<Movie> movies;
     public static final String TAG = "MovieAdapter";
+    public static final double RATING = 8.0;
+    public static final int POPULAR = 0, LESS_POPULAR = 1;
 
     public MovieAdapter(Context context, List<Movie> movies) {
         this.context = context;
@@ -33,20 +35,42 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     // Inflating a layout from XML and returning the holder
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder");
-        View movieView = LayoutInflater.from(context).inflate(R.layout.item_movie, parent, false);
-        return new ViewHolder(movieView);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        RecyclerView.ViewHolder viewHolder;
+
+        if (viewType == POPULAR && context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            viewHolder = new PopularMovieViewHolder(inflater.inflate(R.layout.item_popular_movie, parent, false));
+        } else {
+            viewHolder = new MovieViewHolder(inflater.inflate(R.layout.item_movie, parent, false));
+        }
+        return viewHolder;
     }
 
     // Populate the data into the item through holder
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder " + position);
         // Get the movie at the passed in position
         Movie movie = movies.get(position);
         // Bind the movie data into the View Holder
-        holder.bind(movie);
+        if (holder.getItemViewType() == POPULAR && context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            PopularMovieViewHolder vh = (PopularMovieViewHolder) holder;
+            configurePopularMovieViewHolder(vh, movie);
+        } else {
+            MovieViewHolder vh = (MovieViewHolder) holder;
+            configureMovieViewHolder(vh, movie);
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (movies.get(position).getVoteAverage() >= RATING) {
+            return POPULAR;
+        } else {
+            return LESS_POPULAR;
+        }
     }
 
     // Return the total count of items in the list
@@ -55,41 +79,70 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         return movies.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class MovieViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvTitle;
         TextView tvOverview;
         ImageView ivPoster;
 
-        public ViewHolder(@NonNull View itemView) {
+        public MovieViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvOverview = itemView.findViewById(R.id.tvOverview);
             ivPoster = itemView.findViewById(R.id.ivPoster);
         }
+    }
 
-        public void bind(Movie movie) {
-            tvTitle.setText(movie.getTitle());
-            tvOverview.setText(movie.getOverview());
-            String imageUrl;
-            int radius = 2;
-            int placeholder;
+    public class PopularMovieViewHolder extends RecyclerView.ViewHolder {
 
-            // Configuration changes for images
-            if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                imageUrl = movie.getBackdropPath();
-                placeholder = R.drawable.placeholder_land;
-            } else {
-                imageUrl = movie.getPosterPath();
-                placeholder = R.drawable.placeholder_port;
-            }
+        TextView tvTitle;
+        TextView tvOverview;
+        ImageView ivPoster;
 
-            Glide.with(context)
-                    .load(imageUrl)
-                    .placeholder(placeholder)
-                    .error(placeholder)
-                    .transform(new RoundedCorners(radius))
-                    .into(ivPoster);
+        public PopularMovieViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvTitle = itemView.findViewById(R.id.tvTitlePopular);
+            tvOverview = itemView.findViewById(R.id.tvOverviewPopular);
+            ivPoster = itemView.findViewById(R.id.ivPosterPopular);
         }
+    }
+
+    private void configurePopularMovieViewHolder(PopularMovieViewHolder vh, Movie movie) {
+        vh.tvTitle.setText(movie.getTitle());
+        vh.tvOverview.setText(movie.getOverview());
+        String imageUrl = movie.getBackdropPath();
+        int radius = 2;
+        int placeholder = R.drawable.placeholder_land;
+
+        Glide.with(context)
+                .load(imageUrl)
+                .placeholder(placeholder)
+                .error(placeholder)
+                .transform(new RoundedCorners(radius))
+                .into(vh.ivPoster);
+    }
+
+    private void configureMovieViewHolder(MovieViewHolder vh, Movie movie) {
+        vh.tvTitle.setText(movie.getTitle());
+        vh.tvOverview.setText(movie.getOverview());
+        String imageUrl;
+        int radius = 2;
+        int placeholder;
+
+        // Configuration changes for images
+        if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            imageUrl = movie.getBackdropPath();
+            placeholder = R.drawable.placeholder_land;
+        } else {
+            imageUrl = movie.getPosterPath();
+            placeholder = R.drawable.placeholder_port;
+        }
+
+        Glide.with(context)
+                .load(imageUrl)
+                .placeholder(placeholder)
+                .error(placeholder)
+                .transform(new RoundedCorners(radius))
+                .into(vh.ivPoster);
     }
 }
