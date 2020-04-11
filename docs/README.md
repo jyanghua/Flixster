@@ -52,10 +52,12 @@ Describe any challenges encountered while building the app.
 
 ### App Walkthough GIF
 
-Portrait view
+**Portrait view**
+
 <img src="/docs/gifs/Flixster_part1_portrait.gif" width=350><br>
 
-Landscape view
+**Landscape view**
+
 <img src="/docs/gifs/Flixster_part1_landscape.gif"><br>
 
 ### Notes
