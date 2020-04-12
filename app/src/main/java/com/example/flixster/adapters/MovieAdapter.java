@@ -1,6 +1,7 @@
 package com.example.flixster.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,12 +11,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.example.flixster.DetailActivity;
 import com.example.flixster.R;
 import com.example.flixster.models.Movie;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -24,7 +29,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     Context context;
     List<Movie> movies;
     public static final String TAG = "MovieAdapter";
-    public static final double RATING = 8.0;
+    public static final double RATING = 7.5;
     public static final int POPULAR = 0, LESS_POPULAR = 1;
 
     public MovieAdapter(Context context, List<Movie> movies) {
@@ -81,6 +86,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {
 
+        CardView container;
         TextView tvTitle;
         TextView tvOverview;
         ImageView ivPoster;
@@ -90,11 +96,13 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvOverview = itemView.findViewById(R.id.tvOverview);
             ivPoster = itemView.findViewById(R.id.ivPoster);
+            container = itemView.findViewById(R.id.container);
         }
     }
 
     public class PopularMovieViewHolder extends RecyclerView.ViewHolder {
 
+        CardView container;
         TextView tvTitle;
         TextView tvOverview;
         ImageView ivPoster;
@@ -104,10 +112,11 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             tvTitle = itemView.findViewById(R.id.tvTitlePopular);
             tvOverview = itemView.findViewById(R.id.tvOverviewPopular);
             ivPoster = itemView.findViewById(R.id.ivPosterPopular);
+            container = itemView.findViewById(R.id.container);
         }
     }
 
-    private void configurePopularMovieViewHolder(PopularMovieViewHolder vh, Movie movie) {
+    private void configurePopularMovieViewHolder(PopularMovieViewHolder vh, final Movie movie) {
         vh.tvTitle.setText(movie.getTitle());
         vh.tvOverview.setText(movie.getOverview());
         String imageUrl = movie.getBackdropPath();
@@ -120,9 +129,18 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 .error(placeholder)
                 .transform(new RoundedCorners(radius))
                 .into(vh.ivPoster);
+
+        vh.container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(context, DetailActivity.class);
+                i.putExtra("movie", Parcels.wrap(movie));
+                context.startActivity(i);
+            }
+        });
     }
 
-    private void configureMovieViewHolder(MovieViewHolder vh, Movie movie) {
+    private void configureMovieViewHolder(MovieViewHolder vh, final Movie movie) {
         vh.tvTitle.setText(movie.getTitle());
         vh.tvOverview.setText(movie.getOverview());
         String imageUrl;
@@ -144,5 +162,14 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 .error(placeholder)
                 .transform(new RoundedCorners(radius))
                 .into(vh.ivPoster);
+
+        vh.container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(context, DetailActivity.class);
+                i.putExtra("movie", Parcels.wrap(movie));
+                context.startActivity(i);
+            }
+        });
     }
 }
