@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
+    dataBinding.enabled = true
 
     defaultConfig {
         applicationId "com.example.flixster"
@@ -39,4 +40,5 @@ dependencies {
     implementation 'org.parceler:parceler-api:1.1.12'
     annotationProcessor 'org.parceler:parceler:1.1.12'
     implementation files('libs/YouTubeAndroidPlayerApi.jar')
+    implementation 'com.google.android.material:material:1.1.0'
 }
