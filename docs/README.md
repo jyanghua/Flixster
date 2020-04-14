@@ -23,7 +23,7 @@ Flix is an app that allows users to browse movies from the [The Movie Database A
 
 **Scrolling through the Recycler View**
 
-<img src="/docs/gifs/Flixster_part2_recyclerview.gif" width=350><br>
+<img src="/docs/gifs/Flixster_part2_recyclerview.gif"><br>
 
 **Detailed view on a movie rated lower than 7.5**
 
@@ -40,6 +40,7 @@ The biggest challenge was managing configuration changes, especifically orientat
 ## Open-source libraries used
 - [Android Async HTTP](https://github.com/codepath/CPAsyncHttpClient) - Simple asynchronous HTTP requests with JSON parsing
 - [Glide](https://github.com/bumptech/glide) - Image loading and caching library for Android
+- [Butter Knife](https://jakewharton.github.io/butterknife/) - Field and method binding for Android views (Reduces boilerplate)
 ---
 
 ## Flix Part 1
