@@ -3,7 +3,9 @@ package com.example.flixster;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
@@ -22,7 +24,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import okhttp3.Headers;
 
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     List<Movie> movies;
+    RecyclerView rvMovies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +53,12 @@ public class MainActivity extends AppCompatActivity {
         // Remove default title text
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        // Display logo
-        Objects.requireNonNull(getSupportActionBar()).setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setLogo(R.drawable.logo_toolbar);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        // Display logo and set clickable
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.logo_toolbar);
 
-        RecyclerView rvMovies = binding.rvMovies;
+        rvMovies = binding.rvMovies;
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         rvMovies.setHasFixedSize(true);
@@ -104,5 +106,16 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                rvMovies.smoothScrollToPosition(0);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
