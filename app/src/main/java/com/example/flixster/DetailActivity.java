@@ -4,10 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.AnimatorSet;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -46,8 +48,11 @@ public class DetailActivity extends YouTubeBaseActivity {
     TextView tvRuntime;
     RatingBar ratingBar;
     YouTubePlayerView youTubePlayerView;
+    YouTubePlayer ytPlayer;
     ImageView ivBackdrop;
     ChipGroup chipGenres;
+
+    boolean videoLoaded = false;
 
 
     @Override
@@ -70,7 +75,6 @@ public class DetailActivity extends YouTubeBaseActivity {
         tvOverview.setText(movie.getOverview());
         ratingBar.setRating((float) movie.getVoteAverage());
         tvReleaseDate.setText(movie.getReleaseDate());
-
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(String.format(MOVIE_DETAILS, movie.getMovieId()), new JsonHttpResponseHandler() {
@@ -133,23 +137,21 @@ public class DetailActivity extends YouTubeBaseActivity {
                 Log.e(TAG, "Failed to parse JSON");
             }
         });
-
-
     }
 
     private void initializeYouTube(final String youTubeKey, final double rating){
-
-
         youTubePlayerView.initialize(YOUTUBE_API_KEY, new YouTubePlayer.OnInitializedListener() {
             @Override
             public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
                 Log.d(TAG, "onInitializationSuccess");
 
+                ytPlayer = youTubePlayer;
                 if (rating > MovieAdapter.RATING) {
-                    youTubePlayer.loadVideo(youTubeKey);
+                    ytPlayer.loadVideo(youTubeKey);
                 } else {
-                    youTubePlayer.cueVideo(youTubeKey);
+                    ytPlayer.cueVideo(youTubeKey);
                 }
+                videoLoaded = true;
             }
 
             @Override
@@ -157,5 +159,38 @@ public class DetailActivity extends YouTubeBaseActivity {
                 Log.d(TAG, "onInitializationFailure");
             }
         });
+    }
+
+    @Override //reconfigure display properties on screen rotation
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        //Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
+        {
+            tvTitle.setVisibility(View.VISIBLE);
+            tvOverview.setVisibility(View.VISIBLE);
+            tvReleaseDate.setVisibility(View.VISIBLE);
+            tvRuntime.setVisibility(View.VISIBLE);
+            ratingBar.setVisibility(View.VISIBLE);
+            chipGenres.setVisibility(View.VISIBLE);
+
+            if (videoLoaded) {
+                ytPlayer.setFullscreen(false);
+            } else {
+                ivBackdrop.setVisibility(View.VISIBLE);
+            }
+        }
+        else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE && videoLoaded)
+        {
+            tvTitle.setVisibility(View.GONE);
+            tvOverview.setVisibility(View.GONE);
+            tvReleaseDate.setVisibility(View.GONE);
+            tvRuntime.setVisibility(View.GONE);
+            ratingBar.setVisibility(View.GONE);
+            chipGenres.setVisibility(View.GONE);
+
+            ytPlayer.setFullscreen(true);
+        }
     }
 }
