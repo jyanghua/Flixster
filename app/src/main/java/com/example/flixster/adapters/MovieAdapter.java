@@ -12,12 +12,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.flixster.DetailActivity;
 import com.example.flixster.R;
+import com.example.flixster.databinding.ActivityMainBinding;
 import com.example.flixster.models.Movie;
 
 import org.parceler.Parcels;
@@ -106,6 +108,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         TextView tvTitle;
         TextView tvOverview;
         ImageView ivPoster;
+        ImageView ivPlay;
 
         public PopularMovieViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -113,31 +116,8 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             tvOverview = itemView.findViewById(R.id.tvOverviewPopular);
             ivPoster = itemView.findViewById(R.id.ivPosterPopular);
             container = itemView.findViewById(R.id.container);
+            ivPlay = itemView.findViewById(R.id.ivPlay);
         }
-    }
-
-    private void configurePopularMovieViewHolder(PopularMovieViewHolder vh, final Movie movie) {
-        vh.tvTitle.setText(movie.getTitle());
-        vh.tvOverview.setText(movie.getOverview());
-        String imageUrl = movie.getBackdropPath();
-        int radius = 2;
-        int placeholder = R.drawable.placeholder_land;
-
-        Glide.with(context)
-                .load(imageUrl)
-                .placeholder(placeholder)
-                .error(placeholder)
-                .transform(new RoundedCorners(radius))
-                .into(vh.ivPoster);
-
-        vh.container.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(context, DetailActivity.class);
-                i.putExtra("movie", Parcels.wrap(movie));
-                context.startActivity(i);
-            }
-        });
     }
 
     private void configureMovieViewHolder(MovieViewHolder vh, final Movie movie) {
@@ -162,6 +142,39 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 .error(placeholder)
                 .transform(new RoundedCorners(radius))
                 .into(vh.ivPoster);
+
+        vh.container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(context, DetailActivity.class);
+                i.putExtra("movie", Parcels.wrap(movie));
+                context.startActivity(i);
+            }
+        });
+    }
+
+    private void configurePopularMovieViewHolder(PopularMovieViewHolder vh, final Movie movie) {
+        vh.tvTitle.setText(movie.getTitle());
+        vh.tvOverview.setText(movie.getOverview());
+        String imageUrl = movie.getBackdropPath();
+        int radius = 2;
+        int placeholder = R.drawable.placeholder_land;
+
+        Glide.with(context)
+                .load(imageUrl)
+                .placeholder(placeholder)
+                .error(placeholder)
+                .transform(new RoundedCorners(radius))
+                .into(vh.ivPoster);
+
+        vh.ivPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(context, DetailActivity.class);
+                i.putExtra("movie", Parcels.wrap(movie));
+                context.startActivity(i);
+            }
+        });
 
         vh.container.setOnClickListener(new View.OnClickListener() {
             @Override
